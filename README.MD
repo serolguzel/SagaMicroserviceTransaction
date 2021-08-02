@@ -1,0 +1,11 @@
+## Saga Pattern for Microservice Transaction
+The saga design pattern is a way to manage data consistency across microservices in distributed transaction scenarios. A saga is a sequence of transactions that updates each service and publishes a message or event to trigger the next transaction step. If a step fails, the saga executes compensating transactions that counteract the preceding transactions.
+
+### Related patterns
+* [Choreography](https://docs.microsoft.com/en-us/azure/architecture/patterns/choreography) has each component of the system participate in the decision-making process about the workflow of a business transaction, instead of relying on a central point of control. 
+* [Compensating transactions](https://docs.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction) undo work performed by a series of steps, and eventually define a consistent operation if one or more steps fail. Cloud-hosted applications that implement complex business processes and workflows often follow this eventual consistency model.
+* [Retry](https://docs.microsoft.com/en-us/azure/architecture/patterns/retry) lets an application handle transient failures when it tries to connect to a service or network resource, by transparently retrying the failed operation. Retry can improve the stability of the application.
+* [Circuit](https://docs.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker) breaker handles faults that take a variable amount of time to recover from, when connecting to a remote service or resource. Circuit breaker can improve the stability and resiliency of an application.
+* [Health endpoint monitoring](https://docs.microsoft.com/en-us/azure/architecture/patterns/health-endpoint-monitoring) implements functional checks in an application that external tools can access through exposed endpoints at regular intervals. Health endpoint monitoring can help verify that applications and services are performing correctly.
+
+![alt text](https://github.com/serkomut/SagaMicroserviceTransaction/docs/diagram_3.png "Saga Choreography ")
