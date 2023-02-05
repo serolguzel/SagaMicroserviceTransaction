@@ -1,9 +1,9 @@
+using AsyncKeyedLock;
+using SagaMicroserviceTransaction.Domain;
+using SagaMicroserviceTransaction.Domain.Managers;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SagaMicroserviceTransaction.Async;
-using SagaMicroserviceTransaction.Domain;
-using SagaMicroserviceTransaction.Domain.Managers;
 
 namespace SagaMicroserviceTransaction.Managers
 {
@@ -13,7 +13,11 @@ namespace SagaMicroserviceTransaction.Managers
         private readonly IInitializer initializer;
         private readonly IProcessor processor;
         private readonly IPostProcessor postProcessor;
-        private static readonly KeyedLocker Locker = new KeyedLocker();
+        private static readonly AsyncKeyedLocker<string> asyncKeyedLocker = new AsyncKeyedLocker<string>(o =>
+        {
+            o.PoolSize = 20;
+            o.PoolInitialFill = 1;
+        });
 
         public Coordinator(ISearcher seeker, IInitializer initializer, IProcessor processor,
             IPostProcessor postProcessor)
@@ -51,7 +55,7 @@ namespace SagaMicroserviceTransaction.Managers
             var saga = (IMicroserviceSaga)action;
             var id = saga.ResolveId(message, context);
 
-            using (await KeyedLocker.LockAsync(id))
+            using (await asyncKeyedLocker.LockAsync(id).ConfigureAwait(false))
             {
                 var (isInitialized, state) = await initializer.TryInitializeAsync<TData, TMessage>(saga, id, message);
 
